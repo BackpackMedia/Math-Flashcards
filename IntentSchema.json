@@ -1,0 +1,29 @@
+{
+    "intents": [
+        {
+            "intent": "StartFlashcards",
+            "slots":[
+                {
+                    "name": "Number",
+                    "type": "LIST_OF_NUMBERS"
+                },
+                {
+                    "name": "Speed",
+                    "type": "LIST_OF_SPEED"
+                }
+            ]
+        },
+        {
+            "intent": "GetRandomSet"
+        },
+        {
+            "intent": "AMAZON.HelpIntent"
+        },
+        {
+            "intent": "AMAZON.StopIntent"
+        },
+        {
+            "intent": "AMAZON.CancelIntent"
+        }
+    ]
+}
