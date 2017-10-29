@@ -1,6 +1,7 @@
 {
     "intents": [
         { "intent": "AnswerIntent", "slots":[{"name": "Multiple", "type": "AMAZON.NUMBER"},
+            {"name": "zero", "type": "AMAZON.NUMBER"},
             {"name": "one", "type": "AMAZON.NUMBER"},
             {"name": "two", "type": "AMAZON.NUMBER"},
             {"name": "three", "type": "AMAZON.NUMBER"},
@@ -10,6 +11,7 @@
             {"name": "seven", "type": "AMAZON.NUMBER"},
             {"name": "eight", "type": "AMAZON.NUMBER"},
             {"name": "nine", "type": "AMAZON.NUMBER"},
+            {"name": "ten", "type": "AMAZON.NUMBER"},
             {"name": "Speed", "type": "AMAZON.DURATION"}
             ]
         },

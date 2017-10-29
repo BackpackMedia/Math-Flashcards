@@ -3,14 +3,20 @@ var Alexa = require('alexa-sdk');
 
 var APP_ID = undefined; //OPTIONAL: replace with "amzn1.echo-sdk-ams.app.[your-unique-value-here]";
 
+//Giving info
+//Come back and fix this
+function getSpeechDescription(item){
+    let sentence = item.Multiple + " times " + counter + " is ";
+    return sentence;
+}
 //How to phrase question
-function getQuestion(item, counter){
+function getQuestion(counter, property, item){
     return "What is " + item.Multiple + " times " + counter + "?";
 }
 
 //return answer
-function getAnswer(item, counter, property){
-    return item.Multiple + " times " + counter + " is " + item[property];
+function getAnswer(property, item){
+    return item.Multiple + " times " + formatCasing(property) + " is " + item[property];
 }
 
 //positive re-enforcement
@@ -47,16 +53,16 @@ function getCardTitle(item) { return item.Multiple}
  * Arrays containing times tables
  */
 const data = [
-    { Multiple: 1, zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9},
-    { Multiple: 2, zero: 0, one: 2, two: 4, three: 6, four: 8, five: 10, six: 12, seven: 14, eight: 16, nine: 18},
-    { Multiple: 3, zero: 0, one: 3, two: 6, three: 9, four: 12, five: 15, six: 18, seven: 21, eight: 24, nine: 27},
-    { Multiple: 4, zero: 0, one: 4, two: 8, three: 12, four: 16, five: 20, six: 24, seven: 28, eight: 32, nine: 36},
-    { Multiple: 5, zero: 0, one: 5, two: 10, three: 15, four: 20, five: 25, six: 30, seven: 35, eight: 40, nine: 45},
-    { Multiple: 6, zero: 0, one: 6, two: 12, three: 18, four: 24, five: 30, six: 36, seven: 42, eight: 48, nine: 54},
-    { Multiple: 7, zero: 0, one: 7, two: 14, three: 21, four: 28, five: 35, six: 42, seven: 49, eight: 56, nine: 63},
-    { Multiple: 8, zero: 0, one: 8, two: 16, three: 24, four: 32, five: 40, six: 48, seven: 56, eight: 64, nine: 72},
-    { Multiple: 9, zero: 0, one: 9, two: 18, three: 27, four: 36, five: 45, six: 54, seven: 63, eight: 72, nine: 81},
-    //{Multiple: 10, zero: 0, one: 10, two: 20, three: 30, four: 40, five: 50, six: 60, seven: 70, eight: 80, nine: 90},  
+    { Multiple: 1, zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10},
+    { Multiple: 2, zero: 0, one: 2, two: 4, three: 6, four: 8, five: 10, six: 12, seven: 14, eight: 16, nine: 18, ten: 20},
+    { Multiple: 3, zero: 0, one: 3, two: 6, three: 9, four: 12, five: 15, six: 18, seven: 21, eight: 24, nine: 27, ten: 30},
+    { Multiple: 4, zero: 0, one: 4, two: 8, three: 12, four: 16, five: 20, six: 24, seven: 28, eight: 32, nine: 36, ten: 40},
+    { Multiple: 5, zero: 0, one: 5, two: 10, three: 15, four: 20, five: 25, six: 30, seven: 35, eight: 40, nine: 45, ten: 50},
+    { Multiple: 6, zero: 0, one: 6, two: 12, three: 18, four: 24, five: 30, six: 36, seven: 42, eight: 48, nine: 54, ten: 60},
+    { Multiple: 7, zero: 0, one: 7, two: 14, three: 21, four: 28, five: 35, six: 42, seven: 49, eight: 56, nine: 63, ten: 70},
+    { Multiple: 8, zero: 0, one: 8, two: 16, three: 24, four: 32, five: 40, six: 48, seven: 56, eight: 64, nine: 72, ten: 80},
+    { Multiple: 9, zero: 0, one: 9, two: 18, three: 27, four: 36, five: 45, six: 54, seven: 63, eight: 72, nine: 81, ten: 90},
+    { Multiple: 10, zero: 0, one: 10, two: 20, three: 30, four: 40, five: 50, six: 60, seven: 70, eight: 80, nine: 90, ten: 100},  
 ];
 
 const counter = 0;
@@ -104,11 +110,11 @@ const startHandlers = Alexa.CreateStateHandler(states.START,{
             {
                 //let imageObj = {smallImageUrl: getSmallImage(item), largeImageUrl: getLargeImage(item)};
 
-                this.response.speak(getSpeechDescription(item)).listen(REPROMPT_SPEECH);
+                //this.response.speak(getSpeechDescription(item)).listen(REPROMPT_SPEECH);
                 this.response.cardRenderer(getCardTitle(item), getTextDescription(item));            }
             else
             {
-                this.response.speak(getSpeechDescription(item)).listen(REPROMPT_SPEECH);
+                //this.response.speak(getSpeechDescription(item)).listen(REPROMPT_SPEECH);
             }
         }
         else
@@ -158,7 +164,7 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
         let item = data[random];
 
         let propertyArray = Object.getOwnPropertyNames(item);
-        let property = propertyArray[getRandom(counter)];
+        let property = propertyArray[getRandom(1, propertyArray.length-1)];
 
         this.attributes["quizitem"] = item;
         this.attributes["quizproperty"] = property;
@@ -180,7 +186,7 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
         if (correct)
         {
             response = getSpeechCon(true);
-            //this.attributes["quizscore"]++;
+            this.attributes["quizscore"]++;
         }
         else
         {
@@ -189,20 +195,20 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
 
         response += getAnswer(property, item);
 
-        /*if (this.attributes["counter"] < 10)
+        if (this.attributes["counter"] < 10)
         {
-            response += getCurrentScore(this.attributes["quizscore"], this.attributes["counter"]);
-            this.attributes["response"] = response;
+            //response += getCurrentScore(this.attributes["quizscore"], this.attributes["counter"]);
+            //this.attributes["response"] = response;
             this.emitWithState("AskQuestion");
         }
         else
         {
-            response += getFinalScore(this.attributes["quizscore"], this.attributes["counter"]);
-            speechOutput = response + " " + EXIT_SKILL_MESSAGE;
+            //response += getFinalScore(this.attributes["quizscore"], this.attributes["counter"]);
+            speechOutput = EXIT_SKILL_MESSAGE;
 
             this.response.speak(speechOutput);
             this.emit(":responseReady");
-        }*/
+        }
     },
     "AMAZON.RepeatIntent": function() {
         let question = getQuestion(this.attributes["counter"], this.attributes["quizproperty"], this.attributes["quizitem"]);
@@ -244,10 +250,9 @@ function compareSlots(slots, value)
     return false;
 }
 
-function getRandom(counter)
+function getRandom(min, max)
 {
-    //return Math.floor(Math.random() * (max-min+1)+min);
-    return counter++;
+    return Math.floor(Math.random() * (max-min+1)+min);
 }
 
 function getItem(slots)
