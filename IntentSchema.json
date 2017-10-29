@@ -1,29 +1,22 @@
 {
     "intents": [
-        {
-            "intent": "StartFlashcards",
-            "slots":[
-                {
-                    "name": "Number",
-                    "type": "LIST_OF_NUMBERS"
-                },
-                {
-                    "name": "Speed",
-                    "type": "LIST_OF_SPEED"
-                }
+        { "intent": "AnswerIntent", "slots":[{"name": "Multiple", "type": "AMAZON.NUMBER"},
+            {"name": "one", "type": "AMAZON.NUMBER"},
+            {"name": "two", "type": "AMAZON.NUMBER"},
+            {"name": "three", "type": "AMAZON.NUMBER"},
+            {"name": "four", "type": "AMAZON.NUMBER"},
+            {"name": "five", "type": "AMAZON.NUMBER"},
+            {"name": "six", "type": "AMAZON.NUMBER"},
+            {"name": "seven", "type": "AMAZON.NUMBER"},
+            {"name": "eight", "type": "AMAZON.NUMBER"},
+            {"name": "nine", "type": "AMAZON.NUMBER"},
+            {"name": "Speed", "type": "AMAZON.DURATION"}
             ]
         },
-        {
-            "intent": "GetRandomSet"
-        },
-        {
-            "intent": "AMAZON.HelpIntent"
-        },
-        {
-            "intent": "AMAZON.StopIntent"
-        },
-        {
-            "intent": "AMAZON.CancelIntent"
-        }
+        { "intent": "TableIntent"},
+        { "intent": "AMAZON.HelpIntent"},
+        { "intent": "AMAZON.StopIntent"},
+        { "intent": "AMAZON.StartOverIntent"},
+        { "intent": "AMAZON.CancelIntent"}
     ]
 }
