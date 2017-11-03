@@ -10,13 +10,14 @@ function getSpeechDescription(item){
     return sentence;
 }
 //How to phrase question
+/*Need to work with property and not on counter*/
 function getQuestion(counter, property, item){
-    return "What is " + item.Multiple + " times " + counter + "?";
+    return "What is " + item.Multiple + " times " + formatCasing(property) + "?";
 }
 
 //return answer
 function getAnswer(property, item){
-    return item.Multiple + " times " + formatCasing(property) + " is " + item[property];
+    return item.Multiple + " times " + formatCasing(property) + " is " + item[property] + " ";
 }
 
 //positive re-enforcement
@@ -27,11 +28,11 @@ const speechConsCorrect = ["Booya", "Bam", "Bazinga", "Bingo", "Bravo",
 //wrong answer
 const speechConsWrong = ["Aw man", "Bummer","Le sigh", "Ruh roh", "Shucks", "Uh oh","Whoops a daisy"];
 
-//welcome message
-const WELCOME_MESSAGE = "Welcome to the multiplication flashcard game! I can help you review or I can quiz you."
+//welcome message without intent
+const WELCOME_MESSAGE = "Welcome to the multiplication flashcard game! I can help you review or I can quiz you. What would you like to do?"
 
-//message for the start
-const START_QUIZ_MESSAGE = "We are going to ask 10 questions about a certain times table.";
+//message for the start of quiz
+const START_QUIZ_MESSAGE = "We are going to ask 10 questions.";
 
 //message for the end
 const EXIT_SKILL_MESSAGE = "Thank you for playing this game! Let's play again soon!"
@@ -105,7 +106,7 @@ const startHandlers = Alexa.CreateStateHandler(states.START,{
 
         if (item && item[Object.getOwnPropertyNames(data[0])[0]] != undefined)
         {
-          console.log("\nMEMO's TEST\n");
+          console.log("\nFlashcard Practice\n");
             if (USE_CARDS_FLAG)
             {
                 //let imageObj = {smallImageUrl: getSmallImage(item), largeImageUrl: getLargeImage(item)};
@@ -198,13 +199,13 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
         if (this.attributes["counter"] < 10)
         {
             //response += getCurrentScore(this.attributes["quizscore"], this.attributes["counter"]);
-            //this.attributes["response"] = response;
+            this.attributes["response"] = response;
             this.emitWithState("AskQuestion");
         }
         else
         {
             //response += getFinalScore(this.attributes["quizscore"], this.attributes["counter"]);
-            speechOutput = EXIT_SKILL_MESSAGE;
+            speechOutput = response + " " + EXIT_SKILL_MESSAGE;
 
             this.response.speak(speechOutput);
             this.emit(":responseReady");
