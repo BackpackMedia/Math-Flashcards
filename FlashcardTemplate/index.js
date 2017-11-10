@@ -11,13 +11,13 @@ function getSpeechDescription(item){
 }
 //How to phrase question
 /*Need to work with property and not on counter*/
-function getQuestion(counter, property, item){
-    return "What is " + item.Multiple + " times " + formatCasing(property) + "?";
+function getQuestion(counter, num1, num2){
+    return "Question " + counter + ". What is " + num1 + " times " + num2+ "?";
 }
 
 //return answer
-function getAnswer(property, item){
-    return item.Multiple + " times " + formatCasing(property) + " is " + item[property] + " ";
+function getAnswer(num1, num2, answer){
+    return num1 + " times " + num2 + " is " + answer + " ";
 }
 
 //positive re-enforcement
@@ -29,10 +29,10 @@ const speechConsCorrect = ["Booya", "Bam", "Bazinga", "Bingo", "Bravo",
 const speechConsWrong = ["Aw man", "Bummer","Le sigh", "Ruh roh", "Shucks", "Uh oh","Whoops a daisy"];
 
 //welcome message without intent
-const WELCOME_MESSAGE = "Welcome to the multiplication flashcard game! I can help you review or I can quiz you. What would you like to do?"
+const WELCOME_MESSAGE = "Welcome to the multiplication flashcard game! I can quiz you. When ready say start quiz."
 
 //message for the start of quiz
-const START_QUIZ_MESSAGE = "We are going to ask 10 questions.";
+const START_QUIZ_MESSAGE = "I am going to ask 10 questions.";
 
 //message for the end
 const EXIT_SKILL_MESSAGE = "Thank you for playing this game! Let's play again soon!"
@@ -41,19 +41,19 @@ const EXIT_SKILL_MESSAGE = "Thank you for playing this game! Let's play again so
 const REPROMT_SPEECH = "Which number table would you like to learn?";
 
 //help message
-const HELP_MESSAGE = "I know all the times tables. Let me know which one you need help with or I can quiz you."
+const HELP_MESSAGE = "I can quiz you on your times tables. When ready say start quiz."
 
 //unexpected response
-function getBadAnswer(item) { return "I'm sorry but I don't know about " + item + "." + HELP_MESSAGE}
+function getBadAnswer(item) { return "I'm sorry but I don't understand." + HELP_MESSAGE}
 
 const USE_CARDS_FLAG = true;
 
-function getCardTitle(item) { return item.Multiple}
+function getCardTitle(item) { return "Multiplication Practice"}
 
 /**
  * Arrays containing times tables
  */
-const data = [
+/*const data = [
     { Multiple: 1, zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10},
     { Multiple: 2, zero: 0, one: 2, two: 4, three: 6, four: 8, five: 10, six: 12, seven: 14, eight: 16, nine: 18, ten: 20},
     { Multiple: 3, zero: 0, one: 3, two: 6, three: 9, four: 12, five: 15, six: 18, seven: 21, eight: 24, nine: 27, ten: 30},
@@ -64,7 +64,7 @@ const data = [
     { Multiple: 8, zero: 0, one: 8, two: 16, three: 24, four: 32, five: 40, six: 48, seven: 56, eight: 64, nine: 72, ten: 80},
     { Multiple: 9, zero: 0, one: 9, two: 18, three: 27, four: 36, five: 45, six: 54, seven: 63, eight: 72, nine: 81, ten: 90},
     { Multiple: 10, zero: 0, one: 10, two: 20, three: 30, four: 40, five: 50, six: 60, seven: 70, eight: 80, nine: 90, ten: 100},  
-];
+];*/
 
 const counter = 0;
 
@@ -110,9 +110,8 @@ const startHandlers = Alexa.CreateStateHandler(states.START,{
             if (USE_CARDS_FLAG)
             {
                 //let imageObj = {smallImageUrl: getSmallImage(item), largeImageUrl: getLargeImage(item)};
-
                 //this.response.speak(getSpeechDescription(item)).listen(REPROMPT_SPEECH);
-                this.response.cardRenderer(getCardTitle(item), getTextDescription(item));            }
+                this.response.cardRenderer(getCardTitle(item));            }
             else
             {
                 //this.response.speak(getSpeechDescription(item)).listen(REPROMPT_SPEECH);
@@ -161,17 +160,14 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
             this.attributes["response"] = START_QUIZ_MESSAGE + " ";
         }
 
-        let random = getRandom(0, data.length-1);
-        let item = data[random];
+        let num1 = getRandom(0, 12);
+        let num2 = getRandom(0, 12);
 
-        let propertyArray = Object.getOwnPropertyNames(item);
-        let property = propertyArray[getRandom(1, propertyArray.length-1)];
-
-        this.attributes["quizitem"] = item;
-        this.attributes["quizproperty"] = property;
+        this.attributes["quiznum2"] = num2;
+        this.attributes["quiznum1"] = num1;
         this.attributes["counter"]++;
 
-        let question = getQuestion(this.attributes["counter"], property, item);
+        let question = getQuestion(this.attributes["counter"], num1, num2);
         let speech = this.attributes["response"] + question;
 
         this.emit(":ask", speech, question);
@@ -179,12 +175,12 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
     "AnswerIntent": function() {
         let response = "";
         let speechOutput = "";
-        let item = this.attributes["quizitem"];
-        let property = this.attributes["quizproperty"]
+        let num2 = this.attributes["quiznum2"];
+        let num1 = this.attributes["quiznum1"];
 
-        let correct = compareSlots(this.event.request.intent.slots, item[property]);
+        let correct = num1 * num2;
 
-        if (correct)
+        if (parseInt(this.event.request.intent.slots.number.value) == correct)
         {
             response = getSpeechCon(true);
             this.attributes["quizscore"]++;
@@ -194,7 +190,7 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
             response = getSpeechCon(false);
         }
 
-        response += getAnswer(property, item);
+        response += getAnswer(num1, num2, correct);
 
         if (this.attributes["counter"] < 10)
         {
@@ -212,7 +208,7 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
         }
     },
     "AMAZON.RepeatIntent": function() {
-        let question = getQuestion(this.attributes["counter"], this.attributes["quizproperty"], this.attributes["quizitem"]);
+        let question = getQuestion(this.attributes["counter"], this.attributes["quizproperty"], this.attributes["num2"]);
         this.response.speak(question).listen(question);
         this.emit(":responseReady");
     },
@@ -236,47 +232,9 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
     }
 });
 
-function compareSlots(slots, value)
-{
-    for (let slot in slots)
-    {
-        if (slots[slot].value != undefined)
-        {
-            if (slots[slot].value.toString().toLowerCase() == value.toString().toLowerCase())
-            {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 function getRandom(min, max)
 {
     return Math.floor(Math.random() * (max-min+1)+min);
-}
-
-function getItem(slots)
-{
-    let propertyArray = Object.getOwnPropertyNames(data[0]);
-    let value;
-
-    for (let slot in slots)
-    {
-        if (slots[slot].value !== undefined)
-        {
-            value = slots[slot].value;
-            for (let property in propertyArray)
-            {
-                let item = data.filter(x => x[propertyArray[property]].toString().toLowerCase() === slots[slot].value.toString().toLowerCase());
-                if (item.length > 0)
-                {
-                    return item[0];
-                }
-            }
-        }
-    }
-    return value;
 }
 
 function getSpeechCon(type)
@@ -292,6 +250,7 @@ function formatCasing(key)
     return key;
 }
 
+//fix for card
 function getTextDescription(item)
 {
     let text = "";

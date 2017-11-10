@@ -1,20 +1,4 @@
-TableIntent start flashcards
-TableIntent and start flashcards
-TableIntent flashcards
-AnswerIntent {Multiple}
-AnswerIntent {zero}
-AnswerIntent {one}
-AnswerIntent {two}
-AnswerIntent {three}
-AnswerIntent {four}
-AnswerIntent {five}
-AnswerIntent {six}
-AnswerIntent {seven}
-AnswerIntent {eight}
-AnswerIntent {nine}
-AnswerIntent {ten}
-AnswerIntent {Multiple} {Speed} speed
-AnswerIntent tell me {Multiple}
-AnswerIntent tell me {Multiple} flashcards at {Speed} speed
-AnswerIntent {Multiple} flashcards
-AnswerIntent {Multiple} flashcards at {Speed} speed
+TableIntent start flashcard practice
+TableIntent launch flashcard practice
+AnswerIntent {number}
+AnswerIntent is it {number}
