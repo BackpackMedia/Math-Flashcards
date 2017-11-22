@@ -20,6 +20,8 @@ function getAnswer(num1, num2, answer){
     return num1 + " times " + num2 + " is " + answer + " ";
 }
 
+function getFinalScore(score)
+
 //positive re-enforcement
 const speechConsCorrect = ["Booya", "Bam", "Bazinga", "Bingo", "Bravo",
 "Hip hip hooray", "Hurrah", "Hurray", "Huzzah", "Kaboom", "Kaching", "Oh snap",
@@ -50,27 +52,12 @@ const USE_CARDS_FLAG = true;
 
 function getCardTitle(item) { return "Multiplication Practice"}
 
-/**
- * Arrays containing times tables
- */
-/*const data = [
-    { Multiple: 1, zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10},
-    { Multiple: 2, zero: 0, one: 2, two: 4, three: 6, four: 8, five: 10, six: 12, seven: 14, eight: 16, nine: 18, ten: 20},
-    { Multiple: 3, zero: 0, one: 3, two: 6, three: 9, four: 12, five: 15, six: 18, seven: 21, eight: 24, nine: 27, ten: 30},
-    { Multiple: 4, zero: 0, one: 4, two: 8, three: 12, four: 16, five: 20, six: 24, seven: 28, eight: 32, nine: 36, ten: 40},
-    { Multiple: 5, zero: 0, one: 5, two: 10, three: 15, four: 20, five: 25, six: 30, seven: 35, eight: 40, nine: 45, ten: 50},
-    { Multiple: 6, zero: 0, one: 6, two: 12, three: 18, four: 24, five: 30, six: 36, seven: 42, eight: 48, nine: 54, ten: 60},
-    { Multiple: 7, zero: 0, one: 7, two: 14, three: 21, four: 28, five: 35, six: 42, seven: 49, eight: 56, nine: 63, ten: 70},
-    { Multiple: 8, zero: 0, one: 8, two: 16, three: 24, four: 32, five: 40, six: 48, seven: 56, eight: 64, nine: 72, ten: 80},
-    { Multiple: 9, zero: 0, one: 9, two: 18, three: 27, four: 36, five: 45, six: 54, seven: 63, eight: 72, nine: 81, ten: 90},
-    { Multiple: 10, zero: 0, one: 10, two: 20, three: 30, four: 40, five: 50, six: 60, seven: 70, eight: 80, nine: 90, ten: 100},  
-];*/
-
 const counter = 0;
 
 const states = {
     START: "_START",
-    QUIZ: "_QUIZ"
+    QUIZ: "_QUIZ", 
+    REVIEW: "_Review"
 };
 
 const handlers = {
@@ -83,8 +70,12 @@ const handlers = {
         this.emitWithState("Quiz");
     },
     'AnswerIntent': function () {
-        this.handler.state = states.Start;
+        this.handler.state = states.START;
         this.emitWithState("AnswerIntent");
+    },
+    'ReviewIntent': function () {
+        this.handler.state = states.REVIEW;
+        this.emitWithState("Review");
     },
     'AMAZON.HelpIntent': function () {
         this.response.speak(HELP_MESSAGE).listen(HELP_MESSAGE);
@@ -194,13 +185,12 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
 
         if (this.attributes["counter"] < 10)
         {
-            //response += getCurrentScore(this.attributes["quizscore"], this.attributes["counter"]);
             this.attributes["response"] = response;
             this.emitWithState("AskQuestion");
         }
         else
         {
-            //response += getFinalScore(this.attributes["quizscore"], this.attributes["counter"]);
+            response += getFinalScore(this.attributes["quizscore"], this.attributes["counter"]);
             speechOutput = response + " " + EXIT_SKILL_MESSAGE;
 
             this.response.speak(speechOutput);
@@ -208,7 +198,7 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
         }
     },
     "AMAZON.RepeatIntent": function() {
-        let question = getQuestion(this.attributes["counter"], this.attributes["quizproperty"], this.attributes["num2"]);
+        let question = getQuestion(this.attributes["counter"], this.attributes["num1"], this.attributes["num2"]);
         this.response.speak(question).listen(question);
         this.emit(":responseReady");
     },
@@ -231,6 +221,85 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
         this.emitWithState("AnswerIntent");
     }
 });
+
+/*const reviewHandlers = Alexa.CreateStateHandler(states.REVIEW,{
+    "Review": function() {
+        this.attributes["response"] = "";
+        this.attributes["counter"] = 0;
+        this.emitWithState("AskQuestion");
+    },
+    "ResponseIntent": function() {
+        if (this.attributes["counter"] == 0)
+        {
+            this.attributes["response"] = START_REVIEW_MESSAGE + " ";
+        }
+        this.attributes["response"] = "";
+        let number = parseInt(this.event.request.intent.slots.number.value);
+
+        this.attributes["counter"]++;
+
+        let question = getReview(this.attributes["counter"], number);
+        let speech = this.attributes["response"] + question;
+
+        this.emit(":ask", speech, question);
+    },
+    "AnswerIntent": function() {
+        let response = "";
+        let speechOutput = "";
+        let num2 = this.attributes["quiznum2"];
+        let num1 = this.attributes["quiznum1"];
+
+        let correct = num1 * num2;
+
+        if (parseInt(this.event.request.intent.slots.number.value) == correct)
+        {
+            response = getSpeechCon(true);
+            this.attributes["quizscore"]++;
+        }
+        else
+        {
+            response = getSpeechCon(false);
+        }
+
+        response += getAnswer(num1, num2, correct);
+
+        if (this.attributes["counter"] < 10)
+        {
+            this.attributes["response"] = response;
+            this.emitWithState("AskQuestion");
+        }
+        else
+        {
+            speechOutput = response + " " + EXIT_SKILL_MESSAGE;
+
+            this.response.speak(speechOutput);
+            this.emit(":responseReady");
+        }
+    },
+    "AMAZON.RepeatIntent": function() {
+        let question = getQuestion(this.attributes["counter"], this.attributes["quizproperty"], this.attributes["num2"]);
+        this.response.speak(question).listen(question);
+        this.emit(":responseReady");
+    },
+    "AMAZON.StartOverIntent": function() {
+        this.emitWithState("Review");
+    },
+    "AMAZON.StopIntent": function() {
+        this.response.speak(EXIT_SKILL_MESSAGE);
+        this.emit(":responseReady");
+    },
+    "AMAZON.CancelIntent": function() {
+        this.response.speak(EXIT_SKILL_MESSAGE);
+        this.emit(":responseReady");
+    },
+    "AMAZON.HelpIntent": function() {
+        this.response.speak(HELP_MESSAGE).listen(HELP_MESSAGE);
+        this.emit(":responseReady");
+    },
+    "Unhandled": function() {
+        this.emitWithState("AnswerIntent");
+    }
+});*/
 
 function getRandom(min, max)
 {

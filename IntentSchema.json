@@ -6,6 +6,11 @@
             ]
         },
         { "intent": "TableIntent"},
+        { "intent": "ReviewIntent",
+            "slots":[
+                {"name": "number", "type": "AMAZON.NUMBER"}
+            ]
+        },
         { "intent": "AMAZON.HelpIntent"},
         { "intent": "AMAZON.StopIntent"},
         { "intent": "AMAZON.StartOverIntent"},
