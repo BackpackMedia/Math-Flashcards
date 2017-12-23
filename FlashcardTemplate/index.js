@@ -9,26 +9,34 @@ function getSpeechDescription(item){
     let sentence = "Started " + item.Operation + " quiz";
     return sentence;
 }
-/*Addition Methods*/
-function getAdditionQuestion(counter, num1, num2){
-    return "Question " + counter + ". What is " + num1 + " plus " + num2+ "?";
+
+function getQuestion(counter, property, num1, num2){
+    switch(property){
+        case "Addition":
+            return "Question " + counter + ". What is " + num1 + " plus " + num2+ "?";
+        break;
+        case "Multiplication":
+            return "Question " + counter + ". What is " + num1 + " times " + num2+ "?";
+        break;
+        default:
+            return "Question " + counter + ". What is " + num1 + " times " + num2+ "?";
+        break;
+    }
 }
 
-function getAdditionAnswer(num1, num2, answer){
-    return num1 + " plus " + num2 + " is " + answer + " ";
+function getAnswer(property, num1, num2, answer){
+    switch(property){
+        case "Addition":
+            return num1 + " plus " + num2 + " is " + answer;
+        break;
+        case "Multiplication":
+            return num1 + " times " + num2 + " is " + answer;
+        break;
+        default:
+            return num1 + " times " + num2 + " is " + answer;
+        break;
+    }
 }
-
-/*Multiplication Methods*/
-function getMultiplicationQuestion(counter, num1, num2){
-    return "Question " + counter + ". What is " + num1 + " times " + num2+ "?";
-}
-
-function getMultiplicationAnswer(num1, num2, answer){
-    return num1 + " times " + num2 + " is " + answer + " ";
-}
-
-//Get final score or nah?
-function getFinalScore(score)
 
 //positive re-enforcement
 const speechConsCorrect = ["Booya", "Bam", "Bazinga", "Bingo", "Bravo",
@@ -44,6 +52,9 @@ const WELCOME_MESSAGE = "Welcome to the multiplication flashcard game! I can qui
 //message for the start of quiz
 const START_QUIZ_MESSAGE = "I am going to ask 10 questions.";
 
+//message for the start of review
+const START_QUIZ_MESSAGE = "I am going to go thru 10 practice problems";
+
 //message for the end
 const EXIT_SKILL_MESSAGE = "Thank you for playing this game! Let's play again soon!"
 
@@ -54,7 +65,13 @@ const REPROMT_SPEECH = "Which number table would you like to learn?";
 const HELP_MESSAGE = "I can quiz you on your times tables. When ready say start quiz."
 
 //unexpected response
-function getBadAnswer(item) { return "I'm sorry but I don't understand." + HELP_MESSAGE}
+function getBadAnswer(item) { return "I'm sorry but I don't understand. " + HELP_MESSAGE;}
+
+//Get current score or nah?
+function getCurrentScore(score)
+
+//Get final score or nah?
+function getFinalScore(score)
 
 const USE_CARDS_FLAG = true;
 
