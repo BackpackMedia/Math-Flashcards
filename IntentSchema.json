@@ -6,6 +6,11 @@
             ]
         },
         { "intent": "TableIntent"},
+        { "intent": "OperationIntent",
+            "slots":[
+                {"name": "operation", "type": "LIST_OF_OPERATIONS"}
+            ]
+        },
         { "intent": "ReviewIntent",
             "slots":[
                 {"name": "number", "type": "AMAZON.NUMBER"}
@@ -15,5 +20,21 @@
         { "intent": "AMAZON.StopIntent"},
         { "intent": "AMAZON.StartOverIntent"},
         { "intent": "AMAZON.CancelIntent"}
+    ],
+    "types": [
+        {
+            "name": "LIST_OF_OPERATION",
+            "vales": [
+                {
+                    "name": { "value": "ADD"}
+                },
+                {
+                    "name": { "value": "SUBTRACT"}
+                },
+                {
+                    "name": { "value": "MULTIPLY"}
+                }
+            ]
+        }
     ]
 }

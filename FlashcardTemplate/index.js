@@ -6,20 +6,28 @@ var APP_ID = undefined; //OPTIONAL: replace with "amzn1.echo-sdk-ams.app.[your-u
 //Giving info
 //Come back and fix this
 function getSpeechDescription(item){
-    let sentence = item.Multiple + " times " + counter + " is ";
+    let sentence = "Started " + item.Operation + " quiz";
     return sentence;
 }
-//How to phrase question
-/*Need to work with property and not on counter*/
-function getQuestion(counter, num1, num2){
+/*Addition Methods*/
+function getAdditionQuestion(counter, num1, num2){
+    return "Question " + counter + ". What is " + num1 + " plus " + num2+ "?";
+}
+
+function getAdditionAnswer(num1, num2, answer){
+    return num1 + " plus " + num2 + " is " + answer + " ";
+}
+
+/*Multiplication Methods*/
+function getMultiplicationQuestion(counter, num1, num2){
     return "Question " + counter + ". What is " + num1 + " times " + num2+ "?";
 }
 
-//return answer
-function getAnswer(num1, num2, answer){
+function getMultiplicationAnswer(num1, num2, answer){
     return num1 + " times " + num2 + " is " + answer + " ";
 }
 
+//Get final score or nah?
 function getFinalScore(score)
 
 //positive re-enforcement
@@ -49,8 +57,6 @@ const HELP_MESSAGE = "I can quiz you on your times tables. When ready say start 
 function getBadAnswer(item) { return "I'm sorry but I don't understand." + HELP_MESSAGE}
 
 const USE_CARDS_FLAG = true;
-
-function getCardTitle(item) { return "Multiplication Practice"}
 
 const counter = 0;
 
@@ -95,25 +101,15 @@ const startHandlers = Alexa.CreateStateHandler(states.START,{
     "AnswerIntent": function() {
         let item = getItem(this.event.request.intent.slots);
 
-        if (item && item[Object.getOwnPropertyNames(data[0])[0]] != undefined)
-        {
-          console.log("\nFlashcard Practice\n");
-            if (USE_CARDS_FLAG)
-            {
-                //let imageObj = {smallImageUrl: getSmallImage(item), largeImageUrl: getLargeImage(item)};
-                //this.response.speak(getSpeechDescription(item)).listen(REPROMPT_SPEECH);
-                this.response.cardRenderer(getCardTitle(item));            }
-            else
-            {
+        if (item && item[Object.getOwnPropertyNames(data[0])[0]] != undefined){
+            if (USE_CARDS_FLAG){
+                this.response.cardRenderer("Math Practice");
+            }else{
                 //this.response.speak(getSpeechDescription(item)).listen(REPROMPT_SPEECH);
             }
-        }
-        else
-        {
+        }else{
             this.response.speak(getBadAnswer(item)).listen(getBadAnswer(item));
-
         }
-
         this.emit(":responseReady");
     },
     "TableIntent": function() {
@@ -158,7 +154,7 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
         this.attributes["quiznum1"] = num1;
         this.attributes["counter"]++;
 
-        let question = getQuestion(this.attributes["counter"], num1, num2);
+        let question = getMultiplicationQuestion(this.attributes["counter"], num1, num2);
         let speech = this.attributes["response"] + question;
 
         this.emit(":ask", speech, question);
@@ -181,7 +177,7 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
             response = getSpeechCon(false);
         }
 
-        response += getAnswer(num1, num2, correct);
+        response += getMultiplicationAnswer(num1, num2, correct);
 
         if (this.attributes["counter"] < 10)
         {
