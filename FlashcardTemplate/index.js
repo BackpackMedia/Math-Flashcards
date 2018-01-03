@@ -55,6 +55,9 @@ const START_QUIZ_MESSAGE = "I am going to ask 10 questions.";
 //message for the start of review
 const START_QUIZ_MESSAGE = "I am going to go thru 10 practice problems";
 
+//ask for the operation
+const GET_OPERATION_MESSAGE = "What operation would you like? Addition or Multiplication";
+
 //message for the end
 const EXIT_SKILL_MESSAGE = "Thank you for playing this game! Let's play again soon!"
 
@@ -98,7 +101,7 @@ const handlers = {
     },
     'ReviewIntent': function () {
         this.handler.state = states.REVIEW;
-        this.emitWithState("Review");
+        this.emitWithState("ReviewIntent");
     },
     'AMAZON.HelpIntent': function () {
         this.response.speak(HELP_MESSAGE).listen(HELP_MESSAGE);
@@ -106,7 +109,7 @@ const handlers = {
     },
     "Unhandled": function(){
         this.handler.state = states.START;
-        this.emit(":responseReady");
+        this.emit("Start");
     }
 };
 
@@ -118,7 +121,7 @@ const startHandlers = Alexa.CreateStateHandler(states.START,{
     "AnswerIntent": function() {
         let item = getItem(this.event.request.intent.slots);
 
-        if (item && item[Object.getOwnPropertyNames(data[0])[0]] != undefined){
+        if (item != undefined){
             if (USE_CARDS_FLAG){
                 this.response.cardRenderer("Math Practice");
             }else{
@@ -132,6 +135,10 @@ const startHandlers = Alexa.CreateStateHandler(states.START,{
     "TableIntent": function() {
         this.handler.state = states.QUIZ;
         this.emitWithState("Quiz");
+    },
+    "AMAZON.PauseIntent": function() {
+        this.response.speak(EXIT_SKILL_MESSAGE);
+        this.emit(":responseReady");
     },
     "AMAZON.StopIntent": function() {
         this.response.speak(EXIT_SKILL_MESSAGE);
@@ -156,6 +163,12 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
         this.attributes["response"] = "";
         this.attributes["counter"] = 0;
         this.attributes["quizscore"] = 0;
+        this.emitWithState("OperationIntent");
+        
+    },
+    "OperationIntent": function(){
+        this.attributes["property"] = this.event.request.intent.slots.name.value;
+        this.emit(":ask", speech, question);
         this.emitWithState("AskQuestion");
     },
     "AskQuestion": function() {
@@ -171,7 +184,7 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
         this.attributes["quiznum1"] = num1;
         this.attributes["counter"]++;
 
-        let question = getMultiplicationQuestion(this.attributes["counter"], num1, num2);
+        let question = getQuestion(this.attributes["counter"], num1, num2);
         let speech = this.attributes["response"] + question;
 
         this.emit(":ask", speech, question);
@@ -194,7 +207,7 @@ const quizHandlers = Alexa.CreateStateHandler(states.QUIZ,{
             response = getSpeechCon(false);
         }
 
-        response += getMultiplicationAnswer(num1, num2, correct);
+        response += getAnswer(num1, num2, correct);
 
         if (this.attributes["counter"] < 10)
         {
