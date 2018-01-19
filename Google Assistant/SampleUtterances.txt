@@ -1,0 +1,4 @@
+TableIntent start flashcard practice
+TableIntent launch flashcard practice
+AnswerIntent {number}
+AnswerIntent is it {number}
